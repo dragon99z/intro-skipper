@@ -132,6 +132,12 @@ public class AutoSkip : IHostedService, IDisposable
                 continue;
             }
 
+            // Assert that an intro was detected for this item.
+            if (!Plugin.Instance!.Credits.TryGetValue(itemId, out var credit) || !credit.Valid)
+            {
+                continue;
+            }
+
             // Seek is unreliable if called at the very start of an episode.
             var adjustedStart = Math.Max(5, intro.IntroStart);
 
@@ -141,7 +147,18 @@ public class AutoSkip : IHostedService, IDisposable
                 adjustedStart,
                 intro.IntroEnd);
 
+            _logger.LogTrace(
+                "Playback position is {Position}, intro runs from {Start} to {End}",
+                position,
+                credit.IntroStart,
+                credit.IntroEnd);
+
             if (position < adjustedStart || position > intro.IntroEnd)
+            {
+                continue;
+            }
+
+            if (position < credit.IntroStart || position > credit.IntroEnd)
             {
                 continue;
             }
@@ -162,9 +179,25 @@ public class AutoSkip : IHostedService, IDisposable
                 CancellationToken.None);
             }
 
+            // Notify the user that an introduction is being skipped for them.
+            var notificationCreditsText = Plugin.Instance.Configuration.AutoSkipCreditsNotificationText;
+            if (!string.IsNullOrWhiteSpace(notificationText))
+            {
+                _sessionManager.SendMessageCommand(
+                session.Id,
+                session.Id,
+                new MessageCommand
+                {
+                    Header = string.Empty,      // some clients require header to be a string instead of null
+                    Text = notificationCreditsText,
+                    TimeoutMs = 2000,
+                },
+                CancellationToken.None);
+            }
+
             _logger.LogDebug("Sending seek command to {Session}", deviceId);
 
-            var introEnd = (long)intro.IntroEnd - Plugin.Instance.Configuration.SecondsOfIntroToPlay;
+            var introEnd = (long)intro.IntroEnd - Plugin.Instance.Configuration.SecondsOfIntroOutroToPlay;
 
             _sessionManager.SendPlaystateCommand(
                 session.Id,
@@ -174,6 +207,19 @@ public class AutoSkip : IHostedService, IDisposable
                     Command = PlaystateCommand.Seek,
                     ControllingUserId = session.UserId.ToString("N"),
                     SeekPositionTicks = introEnd * TimeSpan.TicksPerSecond,
+                },
+                CancellationToken.None);
+
+            var creditsEnd = (long)credit.IntroEnd - Plugin.Instance.Configuration.SecondsOfIntroOutroToPlay;
+
+            _sessionManager.SendPlaystateCommand(
+                session.Id,
+                session.Id,
+                new PlaystateRequest
+                {
+                    Command = PlaystateCommand.Seek,
+                    ControllingUserId = session.UserId.ToString("N"),
+                    SeekPositionTicks = creditsEnd * TimeSpan.TicksPerSecond,
                 },
                 CancellationToken.None);
 

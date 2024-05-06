@@ -7,6 +7,7 @@ using Jellyfin.Data.Enums;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Library;
+using MediaBrowser.Model.Querying;
 using Microsoft.Extensions.Logging;
 
 namespace ConfusedPolarBear.Plugin.IntroSkipper;
@@ -84,7 +85,7 @@ public class QueueManager
         Plugin.Instance.QueuedMediaItems.Clear();
         foreach (var kvp in _queuedEpisodes)
         {
-            Plugin.Instance.QueuedMediaItems[kvp.Key] = kvp.Value;
+            Plugin.Instance.QueuedMediaItems.TryAdd(kvp.Key, kvp.Value);
         }
 
         return new(_queuedEpisodes);

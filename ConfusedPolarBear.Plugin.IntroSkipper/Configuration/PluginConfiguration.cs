@@ -154,9 +154,9 @@ public class PluginConfiguration : BasePluginConfiguration
     public bool PersistSkipButton { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the amount of intro to play (in seconds).
+    /// Gets or sets the amount of intro/credits to play (in seconds).
     /// </summary>
-    public int SecondsOfIntroToPlay { get; set; } = 2;
+    public int SecondsOfIntroOutroToPlay { get; set; } = 2;
 
     // ===== Internal algorithm settings =====
 
@@ -203,6 +203,11 @@ public class PluginConfiguration : BasePluginConfiguration
     /// Gets or sets the notification text sent after automatically skipping an introduction.
     /// </summary>
     public string AutoSkipNotificationText { get; set; } = "Intro skipped";
+
+    /// <summary>
+    /// Gets or sets the notification text sent after automatically skipping the credits.
+    /// </summary>
+    public string AutoSkipCreditsNotificationText { get; set; } = "Credits skipped";
 
     /// <summary>
     /// Gets or sets the number of threads for an ffmpeg process.

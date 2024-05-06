@@ -87,7 +87,7 @@ public class SkipIntroController : ControllerBase
             var segment = new Intro(timestamp);
 
             var config = Plugin.Instance.Configuration;
-            segment.IntroEnd -= config.SecondsOfIntroToPlay;
+            segment.IntroEnd -= config.SecondsOfIntroOutroToPlay;
             if (config.PersistSkipButton)
             {
                 segment.ShowSkipPromptAt = segment.IntroStart;
@@ -128,7 +128,7 @@ public class SkipIntroController : ControllerBase
             Plugin.Instance!.Credits.Clear();
         }
 
-        Plugin.Instance!.SaveTimestamps();
+        Plugin.Instance!.SaveTimestamps(mode);
         return NoContent();
     }
 

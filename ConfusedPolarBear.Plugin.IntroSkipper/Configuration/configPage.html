@@ -413,12 +413,12 @@
                         <br />
 
                         <div class="inputContainer">
-                            <label class="inputLabel inputLabelUnfocused" for="SecondsOfIntroToPlay">
+                            <label class="inputLabel inputLabelUnfocused" for="SecondsOfIntroOutroToPlay">
                                 Intro playback duration (in seconds)
                             </label>
-                            <input id="SecondsOfIntroToPlay" type="number" is="emby-input" min="0" />
+                            <input id="SecondsOfIntroOutroToPlay" type="number" is="emby-input" min="0" />
                             <div class="fieldDescription">
-                                Seconds of introduction ending that should be played. Defaults to 2.
+                                Seconds of introduction/credits ending that should be played. Defaults to 2.
                             </div>
                         </div>
 
@@ -453,6 +453,16 @@
                                 <input id="AutoSkipNotificationText" type="text" is="emby-input" />
                                 <div class="fieldDescription">
                                     Message shown after automatically skipping an introduction. Leave blank to disable notification.
+                                </div>
+                            </div>
+
+                            <div id="divAutoSkipCreditsNotificationText" class="inputContainer">
+                                <label class="inputLabel" for="AutoSkipCreditsNotificationText">
+                                    Automatic skip notification message
+                                </label>
+                                <input id="AutoSkipCreditsNotificationText" type="text" is="emby-input" />
+                                <div class="fieldDescription">
+                                    Message shown after automatically skipping the Credits. Leave blank to disable notification.
                                 </div>
                             </div>
                         </details>
@@ -624,14 +634,15 @@
                 // playback
                 "ShowPromptAdjustment",
                 "HidePromptAdjustment",
-                "SecondsOfIntroToPlay",
+                "SecondsOfIntroOutroToPlay",
                 // internals
                 "SilenceDetectionMaximumNoise",
                 "SilenceDetectionMinimumDuration",
                 // UI customization
                 "SkipButtonIntroText",
                 "SkipButtonEndCreditsText",
-                "AutoSkipNotificationText"
+                "AutoSkipNotificationText",
+                "AutoSkipCreditsNotificationText"
             ]
 
             var booleanConfigurationFields = [
@@ -666,14 +677,17 @@
             var autoSkip = document.querySelector("input#AutoSkip");
             var skipFirstEpisode = document.querySelector("div#divSkipFirstEpisode");
             var autoSkipNotificationText = document.querySelector("div#divAutoSkipNotificationText");
+            var autoSkipCreditsNotificationText = document.querySelector("div#divAutoSkipCreditsNotificationText");
 
             async function autoSkipChanged() {
                 if (autoSkip.checked) {
                     skipFirstEpisode.style.display = 'unset';
                     autoSkipNotificationText.style.display = 'unset';
+                    autoSkipCreditsNotificationText.style.display = 'unset';
                 } else {
                     skipFirstEpisode.style.display = 'none';
                     autoSkipNotificationText.style.display = 'none';
+                    autoSkipCreditsNotificationText.style.display = 'none';
                 }
             }
 
